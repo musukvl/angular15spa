@@ -1,0 +1,7 @@
+/packages
+/AngularDemoApp/node_modules
+/AngularDemoApp/obj
+/AngularDemoApp/bin
+/AngularDemoApp/Content/bower_components
+.vs
+*.user
