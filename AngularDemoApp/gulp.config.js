@@ -1,22 +1,28 @@
-﻿var wiredep = require('wiredep')({ directory: './Content/bower_components', bowerJson: require('./Content/bower.json') });
+﻿var merge = require('merge');
 
 module.exports = function () {
-    var clientApp = './Content/js/app/';
-    var bowerFolder = "./Content/bower_components";
-    var config = {
+
+    var options = {
         debug: true,
+        contentFolder: './Content',
+        bowerFolder: './Content/bower_components',
+        bowerJson: './Content/bower.json',
+        jsFolder: './Content/js/app/'
+    };
+    
+    var wiredep = require('wiredep')({ directory: options.bowerFolder, bowerJson: require(options.bowerJson) });
+    
+    var config = {      
         js: [
-            clientApp + 'app.module.js',
-            clientApp + 'app.config.js',
-            clientApp + '**/*.module.js',
-            clientApp + 'templates.js',
-            clientApp + '**/*.config.js',
-            clientApp + '**/*.service.js',
-            clientApp + '**/*.factory.js',
-            clientApp + '**/*.controller.js',
-            clientApp + '**/*.directive.js',
-            clientApp + '**/*.js',
-            '!' + clientApp + '**/*.spec.js'
+            options.jsFolder + '**/*.module.js',
+            options.jsFolder + 'templates.js',
+            options.jsFolder + '**/*.config.js',
+            options.jsFolder + '**/*.service.js',
+            options.jsFolder + '**/*.factory.js',
+            options.jsFolder + '**/*.controller.js',
+            options.jsFolder + '**/*.directive.js',
+            options.jsFolder + '**/*.js',
+            '!' + options.jsFolder + '**/*.spec.js'
         ],
 
         bowerCss: function () {
@@ -24,7 +30,7 @@ module.exports = function () {
                 wiredep.css = [];
             }
             return wiredep.css.concat([
-                bowerFolder + '/bootstrap/dist/css/bootstrap.css'
+                options.bowerFolder + '/bootstrap/dist/css/bootstrap.css'
             ]);
         },
 
@@ -40,5 +46,5 @@ module.exports = function () {
         }
     }
 
-    return config;
+    return merge(config, options);
 }

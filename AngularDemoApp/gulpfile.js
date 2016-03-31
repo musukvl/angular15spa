@@ -1,57 +1,61 @@
-﻿/// <binding ProjectOpened='bower' />
+﻿/// <binding AfterBuild='build' ProjectOpened='bower, watch' />
 var gulp = require("gulp");
 var bower = require("gulp-bower");
 var sass = require("gulp-sass");
 
-
 var config = require('./gulp.config')();
+
 var $ = require('gulp-load-plugins')();
 
-var bowerFiles = require('wiredep')({
-    directory: './Content/bower_components',
-    bowerJson: require('./Content/bower.json')
-});
 
-gulp.task('javascript', function () {
+gulp.task('javascript', ['angularTemplates'], function () {
     var jsPipe = gulp.src(config.js)
         .pipe($.plumber())
         .pipe($.sourcemaps.init())
-        .pipe($.concat('app.js'));
-    if (!config.debug) {
-        jsPipe.pipe($.uglify());
-    } else {
-        jsPipe.pipe($.sourcemaps.write());
-    }    
-    jsPipe.pipe(gulp.dest('./Content/js'));
+        .pipe($.concat('app.js'))
+        .pipe($.if(config.debug, $.sourcemaps.write()))
+        .pipe(gulp.dest(config.contentFolder))
+
+        //minified
+        .pipe($.uglify())
+        .pipe($.if(config.debug, $.sourcemaps.write()))
+        .pipe($.rename({ extname: '.min.js' }))
+        .pipe(gulp.dest(config.contentFolder));
+        
+    
     return jsPipe;
 });
 
 gulp.task('bowerJs', function () {
     var jsPipe = gulp.src(config.bowerJs())
         .pipe($.plumber())
-        .pipe($.concat('vendor.js'));
-    if (!config.debug) {
-        jsPipe.pipe($.uglify());
-    } else {
-        jsPipe.pipe($.sourcemaps.write());
-    }
-    jsPipe.pipe(gulp.dest('./Content'));
+        .pipe($.concat('vendor.js'))
+        .pipe($.if(config.debug, $.sourcemaps.write()))
+        .pipe(gulp.dest(config.contentFolder))
+
+        //minified
+        .pipe($.uglify())
+        .pipe($.if(config.debug, $.sourcemaps.write()))
+        .pipe($.rename({ extname: '.min.js' }))
+        .pipe(gulp.dest(config.contentFolder));
+
     return jsPipe;
 });
 
 gulp.task('bowerCss', function () {
     var cssPipe = gulp.src(config.bowerCss())
         .pipe($.plumber())
-        .pipe($.concatCss('vendor.css'));
-    if (!config.debug) {
-        cssPipe.pipe($.minifyCss());
-    } else {
-        cssPipe.pipe($.sourcemaps.write());
-    }      
-    cssPipe.pipe(gulp.dest('./Content'));
+        .pipe($.concatCss('vendor.css'))
+        .pipe($.if(config.debug, $.sourcemaps.write()))
+        .pipe(gulp.dest(config.contentFolder))
+
+        //minified
+        .pipe($.cleanCss())
+        .pipe($.if(config.debug, $.sourcemaps.write()))        
+        .pipe($.rename({ extname: '.min.css' }))
+        .pipe(gulp.dest(config.contentFolder));
     return cssPipe;
 });
-
 
 
 gulp.task("bower", function () {
@@ -65,21 +69,37 @@ gulp.task("sass", function () {
         .pipe(gulp.dest("./Content/css"));
 });
 
+gulp.task("css", ["sass"], function () {
+
+    var cssPipe = gulp.src("./Content/css/**/*.css")
+       .pipe($.plumber())
+       .pipe($.concatCss('styles.css'))
+       .pipe($.if(config.debug, $.sourcemaps.write()))
+       .pipe(gulp.dest(config.contentFolder))
+
+       //minified
+       .pipe($.cleanCss())
+       .pipe($.if(config.debug, $.sourcemaps.write()))
+       .pipe($.rename({ extname: '.min.css' }))
+       .pipe(gulp.dest(config.contentFolder));
+    return cssPipe;
+});
+
 gulp.task('angularTemplates', function () {
     return gulp.src('./Content/js/**/*.html')
         .pipe($.plumber())
         .pipe($.angularTemplatecache({
-            module: 'app.shared',
-            root: '/Content/js'
+            module: 'app',
+            root: '/Content/js/app'
         }))
-        .pipe(gulp.dest('./Content/js'));
+        .pipe(gulp.dest('./Content/js/app'));
 });
 
 
 gulp.task("watch", function () {
-    gulp.watch("./Content/css/*.scss", ["sass"]);
-    gulp.watch(['./Content/js/**/*.html'], ['angularTemplates']);
+    gulp.watch("./Content/css/*.scss", ["css"]);
+    gulp.watch(['./Content/js/**/*.html'], ['javascript']);
     gulp.watch(config.js, ['javascript']);
 });
 
-gulp.task('build', ['bowerCss', 'bowerJs', 'sass', 'angularTemplates', 'javascript']);
+gulp.task('build', ['bowerCss', 'bowerJs', 'css', 'javascript']);

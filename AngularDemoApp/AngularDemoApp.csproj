@@ -102,13 +102,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\app.js" />
+    <Content Include="Content\app.min.js">
+      <DependentUpon>app.js</DependentUpon>
+    </Content>
+    <Content Include="Content\css\default.css" />
     <Content Include="Content\js\app\app.config.js" />
     <Content Include="Content\js\app\app.module.js" />
     <Content Include="Content\js\app\pages\mainPage\mainPage.controller.js" />
     <Content Include="Content\js\app\pages\mainPage\mainPage.html" />
     <Content Include="Content\js\app\pages\mainPage\mainPage.module.js" />
+    <Content Include="Content\js\app\templates.js" />
+    <Content Include="Content\js\templates.js" />
+    <Content Include="Content\styles.css" />
+    <Content Include="Content\styles.min.css">
+      <DependentUpon>styles.css</DependentUpon>
+    </Content>
     <Content Include="Content\vendor.css" />
     <Content Include="Content\vendor.js" />
+    <Content Include="Content\vendor.min.css">
+      <DependentUpon>vendor.css</DependentUpon>
+    </Content>
+    <Content Include="Content\vendor.min.js">
+      <DependentUpon>vendor.js</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="gulp.config.js" />
     <Content Include="gulpfile.js" />
@@ -130,6 +147,7 @@
     <Content Include="package.json" />
     <Content Include="Content\.bowerrc" />
     <Content Include="Content\bower.json" />
+    <None Include="Content\css\default.scss" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -139,7 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\css\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <PropertyGroup>
