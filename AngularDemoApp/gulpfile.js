@@ -64,7 +64,9 @@ try {
 
     gulp.task("sass", function() {
         return gulp.src("./Content/css/*.scss")
+            .pipe($.if(config.debug, $.sourcemaps.init()))
             .pipe(sass().on("error", sass.logError))
+            .pipe($.if(config.debug, $.sourcemaps.write()))
             .pipe(gulp.dest("./Content/css"));
     });
 
@@ -73,12 +75,10 @@ try {
         var cssPipe = gulp.src("./Content/css/**/*.css")
             .pipe($.plumber())
             .pipe($.concatCss('styles.css'))
-            .pipe($.if(config.debug, $.sourcemaps.write()))
             .pipe(gulp.dest(config.contentFolder))
 
             //minified
             .pipe($.cleanCss())
-            .pipe($.if(config.debug, $.sourcemaps.write()))
             .pipe($.rename({ extname: '.min.css' }))
             .pipe(gulp.dest(config.contentFolder));
         return cssPipe;
