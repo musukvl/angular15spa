@@ -28,12 +28,13 @@ var config = {
         return [
             options.bowerFolder + '/bootstrap/dist/fonts/**.*'
         ];
-    }, 
+    },     
 
     bowerCss: function () {
         if (!wiredep.css) {
             wiredep.css = [];
         }
+        
         return wiredep.css.concat([
             options.bowerFolder + '/bootstrap/dist/css/bootstrap.css'
         ]);

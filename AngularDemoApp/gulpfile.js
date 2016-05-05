@@ -1,14 +1,11 @@
 ﻿/// <binding ProjectOpened='bower-force,watch' />
 var gulp = require("gulp");
-//var bower = require("gulp-bower");
-//var sass = require("gulp-sass");
 var $ = require('gulp-load-plugins')();
-
 
 try {
     var config = require('./gulp.config');
 
-    gulp.task("bower", function () {
+    gulp.task("bower", function() {
         return $.bower({ directory: "./bower_components", cwd: "./Content" })
             .pipe(gulp.dest("./Content/bower_components"));
     });
@@ -26,7 +23,7 @@ try {
 
     gulp.task('bowerJs', function() {
         var jsPipe = gulp.src(config.bowerJs())
-            .pipe($.plumber())            
+            .pipe($.plumber())
             .pipe($.if(config.debug, $.sourcemaps.init()))
             .pipe($.concat('vendor.js'))
             .pipe($.uglify())
@@ -36,14 +33,14 @@ try {
         return jsPipe;
     });
 
-    gulp.task('fonts', function () {
+    gulp.task('fonts', function() {
         return gulp.src(config.fonts())
-         .pipe(gulp.dest(config.contentFolder + '/fonts'));
+            .pipe(gulp.dest(config.contentFolder + '/fonts'));
     });
 
     gulp.task('bowerCss', ['fonts'], function() {
         var cssPipe = gulp.src(config.bowerCss())
-            .pipe($.plumber())            
+            .pipe($.plumber())
             .pipe($.if(config.debug, $.sourcemaps.init()))
             .pipe($.concat('vendor.css'))
             .pipe($.cleanCss())
@@ -83,7 +80,7 @@ try {
 
 } catch (e) {
     console.log("Looks like some bower components are not installed. Run 'bower-force' task. ", e);
-    gulp.task("bower-force", function () {
+    gulp.task("bower-force", function() {
         return $.bower({ directory: "./bower_components", cwd: config.contentFolder, force: true })
             .pipe(gulp.dest(config.contentFolder + "/bower_components"));
     });
