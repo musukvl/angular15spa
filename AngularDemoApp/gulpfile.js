@@ -1,15 +1,15 @@
 ﻿/// <binding ProjectOpened='bower-force,watch' />
 var gulp = require("gulp");
-var bower = require("gulp-bower");
-var sass = require("gulp-sass");
+//var bower = require("gulp-bower");
+//var sass = require("gulp-sass");
 var $ = require('gulp-load-plugins')();
 
 
 try {
-    var config = require('./gulp.config')();
+    var config = require('./gulp.config');
 
     gulp.task("bower", function () {
-        return bower({ directory: "./bower_components", cwd: "./Content" })
+        return $.bower({ directory: "./bower_components", cwd: "./Content" })
             .pipe(gulp.dest("./Content/bower_components"));
     });
 
@@ -37,13 +37,11 @@ try {
     });
 
     gulp.task('fonts', function () {
-        return gulp.src([
-            config.bowerFolder + '/bootstrap/dist/fonts/**.*'
-        ])
-         .pipe(gulp.dest('./Content/fonts'));
+        return gulp.src(config.fonts())
+         .pipe(gulp.dest(config.contentFolder + '/fonts'));
     });
 
-    gulp.task('bowerCss', function() {
+    gulp.task('bowerCss', ['fonts'], function() {
         var cssPipe = gulp.src(config.bowerCss())
             .pipe($.plumber())            
             .pipe($.if(config.debug, $.sourcemaps.init()))
@@ -55,31 +53,29 @@ try {
     });
 
     gulp.task("css", function() {
-
-        return gulp.src(config.contentFolder + "/scss/*.scss")
+        return gulp.src(config.contentFolder + "/scss/**/*.scss")
             .pipe($.plumber())
             .pipe($.if(config.debug, $.sourcemaps.init()))
-            .pipe(sass({ outputStyle: 'compressed' }).on("error", sass.logError))
+            .pipe($.sass({ outputStyle: 'compressed' }).on("error", $.sass.logError))
             .pipe($.concat('styles.css'))
             .pipe($.if(config.debug, $.sourcemaps.write()))
             .pipe(gulp.dest(config.contentFolder + "/css"));
-        
     });
 
     gulp.task('angularTemplates', function() {
-        return gulp.src('./Content/js/**/*.html')
+        return gulp.src(config.contentFolder + '/js/**/*.html')
             .pipe($.plumber())
             .pipe($.angularTemplatecache({
                 module: 'app',
-                root: '/Content/js/app'
+                root: config.contentFolderUrl + '/js/app'
             }))
-            .pipe(gulp.dest('./Content/js/app'));
+            .pipe(gulp.dest(config.contentFolder + '/js/app'));
     });
 
 
     gulp.task("watch", function() {
-        gulp.watch("./Content/css/*.scss", ["css"]);
-        gulp.watch(['./Content/js/**/*.html'], ['javascript']);
+        gulp.watch(config.contentFolder + "/css/*.scss", ["css"]);
+        gulp.watch([config.contentFolder + '/js/**/*.html'], ['javascript']);
         gulp.watch(config.js, ['javascript']);
     });
 
@@ -88,7 +84,7 @@ try {
 } catch (e) {
     console.log("Looks like some bower components are not installed. Run 'bower-force' task. ", e);
     gulp.task("bower-force", function () {
-        return bower({ directory: "./bower_components", cwd: "./Content", force: true })
-            .pipe(gulp.dest("./Content/bower_components"));
+        return $.bower({ directory: "./bower_components", cwd: config.contentFolder, force: true })
+            .pipe(gulp.dest(config.contentFolder + "/bower_components"));
     });
 }
